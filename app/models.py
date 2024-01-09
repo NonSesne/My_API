@@ -3,13 +3,11 @@ from typing import List
 from typing import Optional
 from sqlalchemy import ForeignKey
 from sqlalchemy import String
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column,Integer,Boolean
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.sql.expression import text
+
 
 class Post(Base):
     __tablename__="posts"
@@ -29,6 +27,10 @@ class User(Base):
     email = Column(String,nullable=False,unique=True)
     password= Column(String,nullable=False,unique=False)
     created_at = Column(TIMESTAMP(timezone=True),server_default=text('now()'))
+    bio = Column(String(length=256),nullable=True)
+    phone_number = Column(String(length=12),nullable=True)
+    first_name = Column(String(length=12),nullable=True)
+    last_name = Column(String(length=12),nullable=True)
     
 
     #is it possible that someday your are gonna do a game dev stream or just programming stuff? cuz i really liked the tutorials tbh.
@@ -39,7 +41,17 @@ class Up(Base):
     user_id=Column(Integer,ForeignKey("users.id",ondelete="CASCADE"),primary_key=True)
     post_id=Column(Integer,ForeignKey("posts.id",ondelete="CASCADE"),primary_key=True)
 
+
 class Down(Base):
     __tablename__="Down"
     user_id=Column(Integer,ForeignKey("users.id",ondelete="CASCADE"),primary_key=True)
     post_id=Column(Integer,ForeignKey("posts.id",ondelete="CASCADE"),primary_key=True)
+
+
+#! Following System !#
+
+class followings(Base):
+    __tablename__="followings"
+    follower_id = Column(Integer,ForeignKey("users.id",ondelete="CASCADE"),nullable=False,primary_key=True)
+    followed_id = Column(Integer,ForeignKey("users.id",ondelete="CASCADE"),nullable=False,primary_key=True)
+

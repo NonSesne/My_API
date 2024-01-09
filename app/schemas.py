@@ -59,3 +59,4 @@ class token_data(BaseModel):
 
 class react_data(BaseModel):
     post_id: int
+

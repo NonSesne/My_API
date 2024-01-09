@@ -56,3 +56,21 @@ def update_user (id:int,update_user_info:schemas.User_Public_Info,db: Session =D
     query.update(update_user_info.model_dump())
     db.commit()
     return post
+
+#! ADDING FOLLOWING SYSTEM !#
+@router.post("/{id}/follow",status_code=status.HTTP_201_CREATED)
+def follow(id:int, db : Session=Depends(get_db),Current_user:schemas.token_data=Depends(oauth2.get_current_user)):
+    new_follow = models.followings(follower_id=Current_user.user_id,followed_id=id)
+    db.add(new_follow)
+    db.commit()
+    return {"Data":"Followed !"}
+        
+@router.post("/{id}/unfollow",status_code=status.HTTP_201_CREATED)
+def follow(id:int, db : Session=Depends(get_db),Current_user:schemas.token_data=Depends(oauth2.get_current_user)):
+    query = db.query(models.followings).filter(models.followings.followed_id==id)
+    action = query.first()
+    if(action==None):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    query.delete()
+    db.commit()
+    return {"Data":"Unollowed !"}
