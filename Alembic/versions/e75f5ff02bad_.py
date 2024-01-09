@@ -1,4 +1,4 @@
-"""empty message
+"""Reactions Table
 
 Revision ID: e75f5ff02bad
 Revises: 7fda5948461e

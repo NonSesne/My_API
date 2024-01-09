@@ -14,18 +14,19 @@ router=APIRouter(prefix="/posts",tags=["Posts"])
 @router.get("/",response_model=List[schemas.PostOut])
 def get_posts(db: Session = Depends(get_db), limit: int = 10, skip: int = 0, search: Optional[str] = ""):
  
-    posts = db.query(models.Post, func.count(models.Reactions.post_id).label("Reactions")).outerjoin(
-        models.Reactions, models.Reactions.post_id == models.Post.id).group_by(models.Post.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
+    posts = db.query(models.Post, func.count(models.Up.post_id).label("Up"),func.count(models.Down.post_id).label("Down")).outerjoin(
+        models.Up, models.Up.post_id == models.Post.id).outerjoin(models.Down,models.Down.post_id==models.Post.id).group_by(models.Post.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
     res_posts = []
-    for post,likes in posts:
+    for post,Up,Down in posts:
         res_posts.append({
             "post": post,
-            "likes" : likes
+            "up" : Up,
+            "down": Down
         })
     return res_posts
     
 @router.post("/",status_code=status.HTTP_201_CREATED,response_model=schemas.Post)
-def create_post(new_post_info: schemas.Create_post,db:Session=Depends(get_db),Token_info=Depends(oauth2.get_current_user)):
+def create_post(new_post_info: schemas.Create_post,db:Session=Depends(get_db),Token_info:schemas.token_data=Depends(oauth2.get_current_user)):
     new_post=models.Post(**new_post_info.model_dump())
     new_post.owner_id = Token_info.user_id
     db.add(new_post)
@@ -35,8 +36,8 @@ def create_post(new_post_info: schemas.Create_post,db:Session=Depends(get_db),To
 
 
 @router.get("/{id}",response_model=schemas.PostOut)
-def find_post(id:int,db:Session =Depends(get_db),Token_info:dict=Depends(oauth2.get_current_user)):
-    post=db.query(models.Post,func.count(models.Reactions.post_id).label("likes")).outerjoin(models.Reactions,models.Reactions.post_id==id).group_by(models.Post.id).filter(models.Post.id==id).first()
+def find_post(id:int,db:Session =Depends(get_db),Token_info:schemas.token_data=Depends(oauth2.get_current_user)):
+    post=db.query(models.Post,func.count(models.Up.post_id).label("likes")).outerjoin(models.Up,models.Up.post_id==id).group_by(models.Post.id).filter(models.Post.id==id).first()
     if post !=None:
         res_posts={"post":post[0],"likes":post[1]}
         return res_posts

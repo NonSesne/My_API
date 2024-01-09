@@ -25,7 +25,8 @@ class Post(Post_base):
 
 class PostOut(BaseModel):
     post : Post
-    likes: int
+    up : int
+    down:int
 
 
 class create_user(BaseModel):
