@@ -19,6 +19,9 @@ def react(React:schemas.react_data, db : Session= Depends(get_db),Token_info:sch
         db.commit()
         return {"Data":"Successfully removed!"}
     else :
+        Reaction_query= db.query(models.Down).filter(models.Down.post_id==React.post_id,models.Down.user_id==Token_info.user_id)
+        if Reaction_query.first()!=None:
+            Reaction_query.delete(synchronize_session=False)
         new_Reaction= models.Up(post_id=React.post_id,user_id=Token_info.user_id)
         db.add(new_Reaction)
         db.commit()
@@ -36,6 +39,9 @@ def Down(React:schemas.react_data,db : Session= Depends(get_db),Token_info:schem
         db.commit()
         return {"Data":"Successfully removed!"}
     else :
+        Reaction_query= db.query(models.Up).filter(models.Up.post_id==React.post_id,models.Up.user_id==Token_info.user_id)
+        if Reaction_query.first()!=None:
+            Reaction_query.delete(synchronize_session=False)
         new_Reaction= models.Down(post_id=React.post_id,user_id=Token_info.user_id)
         db.add(new_Reaction)
         db.commit()
