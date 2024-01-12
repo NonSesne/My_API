@@ -60,3 +60,20 @@ class token_data(BaseModel):
 class react_data(BaseModel):
     post_id: int
 
+
+class reaction_out(BaseModel):
+    post_id:int
+    user_id:int
+    user : User_Out
+
+#! FOLLOWING SYSTEM SCHEMAS !#
+
+class follower_Out(BaseModel):
+    follower_id : int
+    followed_id:int
+    follower : User_Out
+
+class following_Out(BaseModel):
+    follower_id : int
+    followed_id:int
+    followed: User_Out

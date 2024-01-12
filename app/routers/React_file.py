@@ -7,6 +7,7 @@ from typing import List
 router = APIRouter(prefix="/react",tags=['Reactions'])
 
 
+
 @router.post("/Up",status_code=status.HTTP_201_CREATED)
 def react(React:schemas.react_data, db : Session= Depends(get_db),Token_info:schemas.token_data = Depends(oauth2.get_current_user)):
 
@@ -26,6 +27,7 @@ def react(React:schemas.react_data, db : Session= Depends(get_db),Token_info:sch
         db.add(new_Reaction)
         db.commit()
         return {"Data":"Succefully Liked"}
+
 
 
 @router.post("/Down",status_code=status.HTTP_201_CREATED)

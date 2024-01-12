@@ -37,9 +37,10 @@ def create_post(new_post_info: schemas.Create_post,db:Session=Depends(get_db),To
 
 @router.get("/{id}",response_model=schemas.PostOut)
 def find_post(id:int,db:Session =Depends(get_db),Token_info:schemas.token_data=Depends(oauth2.get_current_user)):
-    post=db.query(models.Post,func.count(models.Up.post_id).label("likes")).outerjoin(models.Up,models.Up.post_id==id).group_by(models.Post.id).filter(models.Post.id==id).first()
+    post = db.query(models.Post, func.count(models.Up.post_id).label("Up"),func.count(models.Down.post_id).label("Down")).outerjoin(
+        models.Up, models.Up.post_id == models.Post.id).outerjoin(models.Down,models.Down.post_id==models.Post.id).group_by(models.Post.id).filter(models.Post.id==id).first()
     if post !=None:
-        res_posts={"post":post[0],"likes":post[1]}
+        res_posts={"post":post[0],"up":post[1],"down":post[2]}
         return res_posts
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
@@ -73,3 +74,16 @@ def delete_post(id:int,db: Session=Depends(get_db),Token_info:dict=Depends(oauth
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
+
+
+@router.get("/{id}/Ups",response_model=list[schemas.reaction_out])
+def get_Ups(id:int,db : Session =Depends(get_db)):
+    query=db.query(models.Up).filter(models.Up.post_id==id)
+    return query.all()
+
+
+
+@router.get("/{id}/Downs",response_model=list[schemas.reaction_out])
+def get_Downs(id:int,db : Session =Depends(get_db)):
+    query=db.query(models.Down).filter(models.Down.post_id==id)
+    return query.all()

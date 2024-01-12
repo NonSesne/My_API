@@ -40,13 +40,13 @@ class Up(Base):
     __tablename__="Up"
     user_id=Column(Integer,ForeignKey("users.id",ondelete="CASCADE"),primary_key=True)
     post_id=Column(Integer,ForeignKey("posts.id",ondelete="CASCADE"),primary_key=True)
-
+    user = relationship("User")
 
 class Down(Base):
     __tablename__="Down"
     user_id=Column(Integer,ForeignKey("users.id",ondelete="CASCADE"),primary_key=True)
     post_id=Column(Integer,ForeignKey("posts.id",ondelete="CASCADE"),primary_key=True)
-
+    user = relationship("User")
 
 #! Following System !#
 
@@ -54,4 +54,6 @@ class followings(Base):
     __tablename__="followings"
     follower_id = Column(Integer,ForeignKey("users.id",ondelete="CASCADE"),nullable=False,primary_key=True)
     followed_id = Column(Integer,ForeignKey("users.id",ondelete="CASCADE"),nullable=False,primary_key=True)
+    follower = relationship("User",foreign_keys=follower_id)
+    followed = relationship("User",foreign_keys=followed_id)
 
