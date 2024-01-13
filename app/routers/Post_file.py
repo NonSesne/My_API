@@ -1,12 +1,10 @@
-from .. import schemas,utils,models,oauth2
-from fastapi import FastAPI,Response,status,HTTPException,Depends,APIRouter
+from .. import schemas,models,oauth2
+from fastapi import status,HTTPException,Depends,APIRouter
 from ..data_base import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List,Optional
-from sqlalchemy import func, text
-from sqlalchemy.orm import aliased
-import json
+from sqlalchemy import func
 
 router=APIRouter(prefix="/posts",tags=["Posts"])
 
