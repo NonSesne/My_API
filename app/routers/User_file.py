@@ -50,12 +50,12 @@ def delete_user(id:int,db:Session =Depends(get_db)):
 @router.put("/{id}",status_code=status.HTTP_202_ACCEPTED,response_model=schemas.User_Out)
 def update_user (id:int,update_user_info:schemas.User_Public_Info,db: Session =Depends(get_db),Current_user:dict=Depends(oauth2.get_current_user)):
     query = db.query(models.User).filter(models.User.id==id)
-    post=query.first()
-    if post==None:
+    user=query.first()
+    if user==None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     query.update(update_user_info.model_dump())
     db.commit()
-    return post
+    return user
 
 
 

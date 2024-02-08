@@ -3,7 +3,8 @@ from datetime import datetime,timedelta
 from . import schemas,models,data_base,config
 from fastapi import FastAPI,Response,status,HTTPException,Depends
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import session
+from sqlalchemy.orm import Session
+
 
 #   SECRET_KEY
 #   ALGORITHM
@@ -36,6 +37,7 @@ def verify_access_token(token:str, credentials_exception):
         if id is None or name is None:
             raise credentials_exception
         token_data = schemas.token_data(user_id=id,username=name)
+        
     except JWTError:
         raise credentials_exception
     
@@ -44,7 +46,7 @@ def verify_access_token(token:str, credentials_exception):
 
 
 
-def get_current_user(token:str = Depends(oauth2_scheme),db: session = Depends(data_base.get_db)):
+def get_current_user(token:str = Depends(oauth2_scheme),db: Session = Depends(data_base.get_db)):
     credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED ,detail="Could Not Validate Credentials!",headers={"WWW.Authenticate":"Bearer"})
     return verify_access_token(token,credentials_exception) 
     
